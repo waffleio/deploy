@@ -15,12 +15,12 @@ var cfgFile string
 var RootCmd = &cobra.Command{
 	Use:   "deploy",
 	Short: "Deploy one of waffles applications",
-	Long: `So far this is just a simple hello world
-type of application.  Upon execution, for example:
+	Long: `So far this cli only reads in configurations
+and is unable to actually do any work.:
 
 deploy
 
-Should result in the output 'Done.'`,
+The only output will be the utilized configuration file`,
 	Run: func(cmd *cobra.Command, args []string) {
 		deploy.Run()
 	},
@@ -44,9 +44,10 @@ func init() {
 func initConfig() {
 	if cfgFile != "" {
 		viper.SetConfigFile(cfgFile)
+	} else {
+		viper.SetConfigName("deploy")
+		viper.AddConfigPath("./")
 	}
-
-	viper.SetConfigName(".deploy")
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err == nil {

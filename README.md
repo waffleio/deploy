@@ -7,5 +7,21 @@
 ## Purpose
 * To deploy waffle SaaS applications
 
-## To run
-* go run main.go
+## To use
+### Install
+* `go get github.com/waffleio/deploy`
+
+### Configure
+* Navigate to the repo for which you'd like to perform a deploy
+* Drop a configuration file
+  * Follow the [example](./doc/deploy.yaml) if you'd like
+  * Set the necessary env vars - right now they are very specific to circleci
+
+### Run
+* `deploy`
+
+## To Hack on
+* I'm using [`dep`](https://github.com/golang/dep) for package management
+* clone/fork this repo
+* `cd` into the clone
+* `dep ensure`

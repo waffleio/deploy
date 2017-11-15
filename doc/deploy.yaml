@@ -1,0 +1,14 @@
+container_name: appName
+deployment_name: deployImage
+image_name: theImage
+branches:
+  - branch:
+      name: master
+      project: prod
+      cluster: production
+      newrelic: a123
+  - branch:
+      name: staging
+      project: dev
+      cluster: staging
+      newrelic: b098

@@ -2,13 +2,19 @@ package deploy
 
 import (
 	"fmt"
+	"os"
 )
-
-func getOutput() string {
-	return "Done."
-}
 
 // Run our cli
 func Run() {
-	fmt.Println(getOutput())
+	config, err := GetConfig()
+	if err != nil {
+		fmt.Print(err)
+		os.Exit(1)
+	}
+	err = config.Validate()
+	if err != nil {
+		fmt.Printf("We are missing a configuration option: %v\n", err)
+		os.Exit(1)
+	}
 }

@@ -2,11 +2,17 @@ package deploy
 
 import (
 	"fmt"
+	"path/filepath"
 
 	"github.com/spf13/viper"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/util/homedir"
 )
 
 var envVars = []string{
+	"CIRCLE_BRANCH",
 	"CIRCLE_BUILD_NUM",
 	"CIRCLE_BUILD_URL",
 	"CIRCLE_PROJECT_REPONAME",
@@ -30,6 +36,10 @@ type Config struct {
 			Newrelic string `mapstructure:"newrelic"`
 		} `mapstructure:"branch"`
 	} `mapstructure:"branches"`
+	KubernetesConfig    *rest.Config
+	KubernetesClientSet *kubernetes.Clientset
+	NewImage            string
+	Namespace           string
 }
 
 // GetConfig loads the configuration
@@ -47,6 +57,23 @@ func GetConfig() (Config, error) {
 			return c, fmt.Errorf("Unable to read: %s:%v", e, err)
 		}
 	}
+
+	c.NewImage = c.ImageName + ":" + viper.GetString("CIRCLE_SHA1")
+	c.Namespace = viper.GetString("CIRCLE_BRANCH")
+
+	// TODO need to mock this for testing
+	c.KubernetesConfig, err = clientcmd.BuildConfigFromFlags("", filepath.Join(homedir.HomeDir(), ".kube", "config"))
+	if err != nil {
+		return c, fmt.Errorf("Failure to properly load a kubernetes configuration: %v", err)
+
+	}
+
+	// TODO need to mock this for testing
+	c.KubernetesClientSet, err = kubernetes.NewForConfig(c.KubernetesConfig)
+	if err != nil {
+		panic(err)
+	}
+
 	return c, nil
 }
 
